@@ -27,7 +27,7 @@ In the following, you are going to see how to get started, how to load a model a
 ##  0 Getting Started
 
 ### Compile and execute the code
-To compile the CINN's code, one needs to build the docker image first
+To compile the CINN's code, one needs to build the docker image first:
 
 ```sh
 cd tools/docker
@@ -35,7 +35,7 @@ ln -s Dockerfile.cpu Dockerfile
 docker build . -t cinn-dev
 ```
 
-Then start a docker container, and compile the code inside it
+Then start a docker container, and compile the code inside it:
 
 ```sh
 # inside the docker container
@@ -47,7 +47,7 @@ sh tools/ci_build.sh
 ./build.sh ci
 ```
 
-After compilation, you can launch the C++ and python tests
+After compilation, you can launch the C++ and python tests:
 ```sh
 cd build
 ctest -V
@@ -55,9 +55,9 @@ ctest -V
 ### Reference the API usage
 Read the code in the tests
 
-For Python API, reference the code inside `python/tests`.
+For Python APIs, reference the code inside `python/tests`.
 
-The C++ API locates in `cinn/*/*_test.cc`, the high level API locates in `hlir/frontend`, the lower level API is in `cinn/cinn.h`.
+The C++ APIs are in `cinn/*/*_test.cc`, the high level APIs in `hlir/frontend`, and the lower level APIs in `cinn/cinn.h`.
 
 ## 1 Example
 
@@ -81,7 +81,7 @@ inter.Run();
 
 ### 1.2 Use CINN lower level DSL to define computations and execute them
 
-The following is a naive matrix-multiplication implementation using the CINN DSL
+The following is a naive matrix-multiplication implementation using the CINN DSL:
 
 ```c++
 #include "cinn/cinn.h"
@@ -121,7 +121,7 @@ outputs = outputs.c_header("./test02_matmul_block.h").c_source("./test02_matmul_
 compiler.Compile(builder.Build(), outputs);
 ```
 
-This can genrate the optimized C source code like
+This can genrate the optimized C source code like:
 
 ```c++
 void matmul_block(void* _args, int32_t num_args)
