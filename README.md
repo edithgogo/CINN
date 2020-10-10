@@ -16,21 +16,54 @@
 
 # CINN : a Compiler Infrastructure for Neural Networks
 
-
 [Install](./docs/install.md) | 
 [Roadmap](./docs/roadmap.md)
 
-The project CINN is a machine learning compiler and executor for multiple hardwares. 
-It is designed to provide multiple layers of APIs to make DNN computation graph easier to define,  faster to execute, and more convenient to extend with hardware backends.
-Currently, it targets X86 CPUs and NVidia GPUs.
+CINN is a machine learning compiler and executor for multiple hardwares. 
+It is designed to provide multiple layers of APIs to make DNN computation graph easier to define, faster to execute, and more convenient to extend with hardware backends.
+Currently, it focuses on X86 CPUs and NVidia GPUs. CINN is under active maintenance. 
+In the following, you are going to see how to get started, how to load a model and execute it in CINN, how CINN actually works, and its license.
 
-This project is in active development. 
+##  0 Getting Started
 
-## Example
+### Compile and execute the code
+To compile the CINN's code, one need to build the docker image first
 
-Let's take C++ APIs as an example, the corresponding Python APIs are available and just differ little.
+```sh
+cd tools/docker
+ln -s Dockerfile.cpu Dockerfile
+docker build . -t cinn-dev
+```
 
-### Load a PaddlePaddle model and execute
+Then start a docker container, and compile the code inside it
+
+```sh
+# inside the docker container
+
+# compile and install isl
+sh tools/ci_build.sh
+
+# compile the tests and python library
+./build.sh ci
+```
+
+After compilation, you can launch the C++ and python tests
+```sh
+cd build
+ctest -V
+```
+### Reference the API usage
+Read the code in the tests
+
+For Python API, reference the code inside `python/tests`.
+
+The C++ API locates in `cinn/*/*_test.cc`, the high level API locates in `hlir/frontend`, the lower level API is in `cinn/cinn.h`.
+
+## 1 Example
+
+The following is an example of our C++ APIs. Similar Python APIs are also available with minor differences.
+
+### 1.1 Load a PaddlePaddle model and execute
 
 ```c++
 #include "cinn/frontend/interpreter.h"
@@ -46,7 +79,7 @@ inter.Run();
 // get output content from output_handle
 ```
 
-### Use CINN lower level DSL to define some computation and execute
+### 1.2 Use CINN lower level DSL to define computations and execute them
 
 The following is a naive matrix-multiplication implementation using the CINN DSL
 
@@ -123,65 +156,35 @@ void matmul_block(void* _args, int32_t num_args)
 }
 ```
 
-Change the `CodeGenCX86` usage to `CodeGenLLVM`, it will produce a LLVM JIT-compiled function instead which can invoke realtime.
+If you change `CodeGenCX86` usage to `CodeGenLLVM`, it will produce a LLVM JIT-compiled function instead, invoked realtime.
 
-## How it works
+## 2 How it works
 
-The CINN lowers a traditional DNN model into a two-level intermediate representation(IR), the high-level IR(HLIR) and CINN IR.
+The CINN lowers a traditional DNN model into a two-level intermediate representation(IR), the high-level IR(HLIR) and the CINN IR.
 
-The HLIR helps to define some domain-specific computation and perform some overall optimization on the IR-graph; 
-the CINN IR helps to represent some computation semantic and finally lower to a hardware backend.
+The HLIR helps to define domain-specific computations and perform overall optimizations on the IR-graph; while the CINN IR helps to represent computations semantically and finally lower them to a hardware backend.
 
-Both levels of IR have the similar SSA graph, analysis and optimization facilities.
+Both levels of IRs have the similar SSA graph, analysis, and optimization facilities.
 
 CINN is based on the polyhedral compilation thus it is easy to extend with more loop optimizations.
 The schedule transform is applied between the lowering from HLIR to CINN IR.
 
-The overall architecture is as follows
+The overall architecture is as follows:
 
 ![CINN architecture](./docs/images/cinn-architecutre.png)
 
+### 2.1 Fundamental Concepts
 
-##  Getting Started
+There are two levels of APIs in CINN, high-level IR and CINN IR. The followings are fundamental concepts in these two IRs.
 
-### Compile and execute the code
-To compile the CINN's code, one need to build the docker image first
-
-```sh
-cd tools/docker
-ln -s Dockerfile.cpu Dockerfile
-docker build . -t cinn-dev
-```
-
-Then start a docker container, and compile the code inside it
-
-```sh
-# inside the docker container
-
-# compile and install isl
-sh tools/ci_build.sh
-
-# compile the tests and python library
-./build.sh ci
-```
-
-After compilation, you can launch the C++ and python tests
-```sh
-cd build
-ctest -V
-```
-
-### Concepts
-There are two levels of APIs in CINN, the higher level is HLIR and the lower level is CINN IR, both contain some concepts.
-
-In HLIR
+In HLIR:
 
 - `Primitive Emitter`(PE), encapsulates the computation of different tensor-based algorithms,
 - `frontend::Executor`, the container to execute a model (of PaddlePaddle),
 - `frotnend::Program`, the program helps to define a machine learning computation,
 - `hlir::framework::Tensor`, multi-dimensional arrays helps to manage a memory buffer.
 
-In CINN IR
+In CINN IR:
 
 - `Compute`, the method to define a computation,
 - `Lower`, the method to lower a computation to the corresponding IR,
@@ -190,13 +193,6 @@ In CINN IR
 - `Expr`, an expression represents any CINN IR node(no specified Statement node),
 - `Stage`, holds some schedule details of a tensor,
 
-### Reference the API usage
-Read the code in the tests
-
-For Python API, reference the code inside `python/tests`.
-
-The C++ API locates in `cinn/*/*_test.cc`, the high level API locates in `hlir/frontend`, the lower level API is in `cinn/cinn.h`.
-
-## License
+## 3 License
 
 CINN is licensed under the Apache 2.0 License.
