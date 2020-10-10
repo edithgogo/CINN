@@ -162,12 +162,12 @@ If you change `CodeGenCX86` usage to `CodeGenLLVM`, it will produce a LLVM JIT-c
 
 The CINN lowers a traditional DNN model into a two-level intermediate representation(IR), the high-level IR(HLIR) and the CINN IR.
 
-The HLIR helps to define domain-specific computations and perform overall optimizations on the IR-graph; while the CINN IR helps to represent computations semantically and finally lower them to a hardware backend.
+The HLIR helps to define domain-specific computations and perform overall optimizations on the IR-graph, while the CINN IR helps to represent computations semantically and finally lower them to a hardware backend.
 
 Both levels of IRs have the similar SSA graph, analysis, and optimization facilities.
 
-CINN is based on the polyhedral compilation thus it is easy to extend with more loop optimizations.
-The schedule transform is applied between the lowering from HLIR to CINN IR.
+CINN is based on the polyhedral compilation, and thus it is easy to extend with more loop optimizations.
+The schedule transformation is applied between the lowering from HLIR to CINN IR.
 
 The overall architecture is as follows:
 
@@ -175,7 +175,7 @@ The overall architecture is as follows:
 
 ### 2.1 Fundamental Concepts
 
-There are two levels of APIs in CINN, high-level IR and CINN IR. The followings are fundamental concepts in these two IRs.
+There are two levels of APIs in CINN, high-level IR and the CINN IR at the lower lower. The followings are fundamental concepts in these two types of IRs.
 
 In HLIR:
 
