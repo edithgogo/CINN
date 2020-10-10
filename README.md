@@ -27,7 +27,7 @@ In the following, you are going to see how to get started, how to load a model a
 ##  0 Getting Started
 
 ### Compile and execute the code
-To compile the CINN's code, one need to build the docker image first
+To compile the CINN's code, one needs to build the docker image first
 
 ```sh
 cd tools/docker
